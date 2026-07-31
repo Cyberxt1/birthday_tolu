@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -51,7 +51,8 @@
     }
 
     #spaceCanvas,
-    #burstCanvas {
+    #burstCanvas,
+    #confettiCanvas {
       position: fixed;
       inset: 0;
       width: 100%;
@@ -63,8 +64,9 @@
       z-index: 0;
     }
 
-    #burstCanvas {
-      z-index: 42;
+    #burstCanvas,
+    #confettiCanvas {
+      z-index: 1;
     }
 
     .aurora {
@@ -722,7 +724,7 @@
     }
 
     .cake-stage {
-      display: none;
+      display: block;
     }
 
     .wish-panel.is-wish-saved .wish-form {
@@ -1026,18 +1028,19 @@
   <audio id="songThree" src="song3.mp3" preload="auto" playsinline></audio>
   <canvas id="spaceCanvas" aria-hidden="true"></canvas>
   <canvas id="burstCanvas" aria-hidden="true"></canvas>
+  <canvas id="confettiCanvas" aria-hidden="true"></canvas>
   <div class="aurora" aria-hidden="true"></div>
   <div class="light-leak" id="lightLeak" aria-hidden="true"></div>
 
   <div class="entry-gate" id="entryGate">
-    <button type="button">Tap to see the world 😁</button>
+    <button type="button">Tap to see the world ðŸ˜</button>
   </div>
 
   <button class="tap-zone top-left" id="topLeftZone" type="button" aria-label="Birthday burst from top left"></button>
   <button class="tap-zone bottom-left" id="bottomLeftZone" type="button" aria-label="Celebration stream from bottom corners"></button>
 
   <button class="hotspot" id="wishHotspot" type="button" aria-label="Open birthday wish experience">
-    <span aria-hidden="true">✦</span>
+    <span aria-hidden="true">âœ¦</span>
   </button>
   <div class="hotspot-hint" id="hotspotHint">Click here to make a wish</div>
 
@@ -1046,7 +1049,7 @@
     <section class="transmission" aria-labelledby="globalTitle">
       <div class="stage">
         <div class="brand">
-          <h1 id="globalTitle">Happy Birthday Global Person🎂</h1>
+          <h1 id="globalTitle">Happy Birthday Global PersonðŸŽ‚</h1>
         </div>
 
         <div class="globe-system" aria-label="Rotating hologram birthday globe">
@@ -1062,7 +1065,7 @@
 
   <div class="modal" id="wishModal" role="dialog" aria-modal="true" aria-labelledby="wishHeading">
     <div class="wish-panel" id="wishPanel">
-      <button class="close-modal" id="closeModal" type="button" aria-label="Close wish experience">×</button>
+      <button class="close-modal" id="closeModal" type="button" aria-label="Close wish experience">Ã—</button>
       <h2 class="wish-title" id="wishHeading">Make your birthday wish...</h2>
       <p class="wish-copy">Lock it in, then blow out the candles and send the signal worldwide.</p>
 
@@ -1070,13 +1073,13 @@
         <div class="plate"></div>
         <div class="layer bottom"></div>
         <div class="layer top"></div>
-        <div class="candle"><span class="flame"></span><span class="smoke">💨</span></div>
-        <div class="candle"><span class="flame"></span><span class="smoke">💨</span></div>
-        <div class="candle"><span class="flame"></span><span class="smoke">💨</span></div>
+        <div class="candle"><span class="flame"></span><span class="smoke">ðŸ’¨</span></div>
+        <div class="candle"><span class="flame"></span><span class="smoke">ðŸ’¨</span></div>
+        <div class="candle"><span class="flame"></span><span class="smoke">ðŸ’¨</span></div>
       </div>
 
       <button class="blow-button" id="blowButton" type="button">Blow Out Candles</button>
-      <p class="transmitted">Wish Transmitted Globally 🌍✨</p>
+      <p class="transmitted">Wish Transmitted Globally ðŸŒâœ¨</p>
     </div>
   </div>
 
@@ -1087,6 +1090,11 @@
     const spaceCtx = spaceCanvas.getContext("2d");
     const burstCanvas = document.getElementById("burstCanvas");
     const burstCtx = burstCanvas.getContext("2d");
+    const confettiCanvas = document.getElementById("confettiCanvas");
+    const confettiEngine = confetti.create(confettiCanvas, {
+      resize: true,
+      useWorker: true
+    });
     const songOne = document.getElementById("songOne");
     const songTwo = document.getElementById("songTwo");
     const songThree = document.getElementById("songThree");
@@ -1105,12 +1113,7 @@
     wishPanel.innerHTML = `
       <button class="close-modal" id="closeModal" type="button" aria-label="Close wish experience">&times;</button>
       <h2 class="wish-title" id="wishHeading">Make your birthday wish...</h2>
-      
-      <form class="wish-form" id="wishForm">
-        <textarea class="wish-input" id="wishInput" name="wish" placeholder="Type your birthday wish here..." required></textarea>
-        <button class="blow-button" id="saveWishButton" type="submit">Make a Wish</button>
-        <p class="save-status" id="saveStatus" role="status" aria-live="polite"></p>
-      </form>
+      <p class="wish-copy">Close your eyes for a second, make the wish, then blow your candles.</p>
       <div class="cake-stage">
         <div class="cake" aria-label="Birthday cake with three candles">
           <div class="plate"></div>
@@ -1127,9 +1130,6 @@
 
     const closeModal = document.getElementById("closeModal");
     const blowButton = document.getElementById("blowButton");
-    const wishForm = document.getElementById("wishForm");
-    const wishInput = document.getElementById("wishInput");
-    const saveStatus = document.getElementById("saveStatus");
 
     const songVolumes = new Map([
       [songOne, 0.2],
@@ -1236,11 +1236,11 @@
       switchSong(songTwo, songThree, 280);
     }
 
-    const birthdayMessage = `Happy Birthday, Toluwanimi! ✨
+    const birthdayMessage = `Happy Birthday, Toluwanimi! âœ¨
 
-I just want to wish you a happy birthday! In the short time we’ve talked, it’s already super obvious how grounded, smart, and capable you are.
+I just want to wish you a happy birthday! In the short time we've talked, it's already super obvious how grounded, smart, and capable you are.
 
-As you step into this new age, I hope you never lose sight of how much potential you carry. May this year be kind to you, surprise you in the best ways possible, and bring you closer to every single goal you’re chasing. Enjoy every second of your day!`;
+As you step into this new age, I pray you never loose sight of how much potential you carry. May this year be kind to you, surprise you in the best ways possible, and bring you closer to every single goal you are chasing. Enjoy every second of your day!`;
 
     function typeMessage(index = 0) {
       if (index <= birthdayMessage.length) {
@@ -1503,11 +1503,11 @@ As you step into this new age, I hope you never lose sight of how much potential
     }
 
     function topLeftBurst() {
-      const icons = ["🎂", "🎉", "🎊", "✨"];
+      const icons = ["ðŸŽ‚", "ðŸŽ‰", "ðŸŽŠ", "âœ¨"];
       for (let i = 0; i < 42; i += 1) {
         spawnEmoji(icons[i % icons.length], 18, 18, rand(2.4, 10), rand(1.2, 8), rand(22, 44));
       }
-      confetti({
+      confettiEngine({
         particleCount: 120,
         spread: 78,
         angle: 45,
@@ -1517,7 +1517,7 @@ As you step into this new age, I hope you never lose sight of how much potential
     }
 
     function bottomCornerStream() {
-      const icons = ["❤️", "❤️", "❤️", "❤️", "🎂"];
+      const icons = ["â¤ï¸", "â¤ï¸", "â¤ï¸", "â¤ï¸", "ðŸŽ‚"];
       for (let i = 0; i < 38; i += 1) {
         const fromLeft = i % 2 === 0;
         spawnFastEmoji(
@@ -1529,14 +1529,14 @@ As you step into this new age, I hope you never lose sight of how much potential
           rand(22, 36)
         );
       }
-      confetti({
+      confettiEngine({
         particleCount: 70,
         angle: 68,
         spread: 62,
         origin: { x: 0, y: 1 },
         colors: ["#00f2fe", "#4facfe", "#f6d365", "#ffffff"]
       });
-      confetti({
+      confettiEngine({
         particleCount: 70,
         angle: 112,
         spread: 62,
@@ -1547,7 +1547,7 @@ As you step into this new age, I hope you never lose sight of how much potential
 
     function loveSpray(duration = 12000) {
       const end = Date.now() + duration;
-      const icons = ["❤️", "❤️", "❤️", "❤️", "🎂"];
+      const icons = ["â¤ï¸", "â¤ï¸", "â¤ï¸", "â¤ï¸", "ðŸŽ‚"];
       let lastSpawn = 0;
 
       (function frame(now) {
@@ -1576,7 +1576,7 @@ As you step into this new age, I hope you never lose sight of how much potential
       const colors = ["#f6d365", "#8be9dd", "#d8a7ff", "#ffffff"];
 
       (function frame() {
-        confetti({
+        confettiEngine({
           particleCount: 7,
           startVelocity: 0,
           ticks: 220,
@@ -1592,15 +1592,13 @@ As you step into this new age, I hope you never lose sight of how much potential
     }
 
     function openWishModal() {
-      wishPanel.classList.remove("blown", "is-wish-saved");
-      saveStatus.textContent = "";
-      wishInput.value = "";
+      wishPanel.classList.remove("blown");
       shareButton.classList.remove("is-visible");
       hotspotHint.classList.remove("is-visible");
       document.body.classList.add("is-typing");
       wishModal.classList.add("is-open");
       switchSong(songOne, songTwo, 320);
-      wishInput.focus({ preventScroll: true });
+      blowButton.focus({ preventScroll: true });
     }
 
     function closeWishModal() {
@@ -1615,7 +1613,7 @@ As you step into this new age, I hope you never lose sight of how much potential
       void lightLeak.offsetWidth;
       lightLeak.classList.add("is-active");
       playFinalSong();
-      globalTitle.textContent = "It's your Birthday 🎂";
+      globalTitle.textContent = "It's your Birthday ðŸŽ‚";
       confettiRain(3600);
       loveSpray(12000);
       setTimeout(() => {
@@ -1627,7 +1625,7 @@ As you step into this new age, I hope you never lose sight of how much potential
       const colors = ["#00f2fe", "#4facfe", "#f6d365", "#ffffff"];
 
       (function fireworkFrame() {
-        confetti({
+        confettiEngine({
           particleCount: 24,
           startVelocity: 34,
           spread: 360,
@@ -1635,14 +1633,14 @@ As you step into this new age, I hope you never lose sight of how much potential
           origin: { x: Math.random(), y: rand(0.12, 0.62) },
           colors
         });
-        confetti({
+        confettiEngine({
           particleCount: 10,
           angle: 60,
           spread: 72,
           origin: { x: 0, y: 0.72 },
           colors
         });
-        confetti({
+        confettiEngine({
           particleCount: 10,
           angle: 120,
           spread: 72,
@@ -1652,16 +1650,6 @@ As you step into this new age, I hope you never lose sight of how much potential
 
         if (Date.now() < end) requestAnimationFrame(fireworkFrame);
       }());
-    }
-
-    function saveWish(event) {
-      event.preventDefault();
-      const wish = wishInput.value.trim();
-      if (!wish) return;
-
-      saveStatus.textContent = "";
-      wishPanel.classList.add("is-wish-saved");
-      setTimeout(() => blowButton.focus({ preventScroll: true }), 250);
     }
 
     async function shareImage() {
@@ -1713,7 +1701,6 @@ As you step into this new age, I hope you never lose sight of how much potential
     wishHotspot.addEventListener("click", openWishModal);
     closeModal.addEventListener("click", closeWishModal);
     blowButton.addEventListener("click", blowCandles);
-    wishForm.addEventListener("submit", saveWish);
     shareButton.addEventListener("click", shareImage);
 
     wishModal.addEventListener("click", (event) => {
@@ -1730,3 +1717,4 @@ As you step into this new age, I hope you never lose sight of how much potential
   </script>
 </body>
 </html>
+
