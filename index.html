@@ -67,6 +67,7 @@
     #burstCanvas,
     #confettiCanvas {
       z-index: 1;
+      opacity: 0.42;
     }
 
     .aurora {
@@ -503,13 +504,7 @@
     }
 
     .tap-zone {
-      position: fixed;
-      z-index: 10;
-      width: min(32vw, 150px);
-      height: min(32vw, 150px);
-      border: 0;
-      opacity: 0;
-      cursor: pointer;
+      display: none;
     }
 
     .tap-zone.top-left {
@@ -1033,14 +1028,11 @@
   <div class="light-leak" id="lightLeak" aria-hidden="true"></div>
 
   <div class="entry-gate" id="entryGate">
-    <button type="button">Tap to see the world ðŸ˜</button>
+    <button type="button">Tap to see the world &#128513;</button>
   </div>
 
-  <button class="tap-zone top-left" id="topLeftZone" type="button" aria-label="Birthday burst from top left"></button>
-  <button class="tap-zone bottom-left" id="bottomLeftZone" type="button" aria-label="Celebration stream from bottom corners"></button>
-
   <button class="hotspot" id="wishHotspot" type="button" aria-label="Open birthday wish experience">
-    <span aria-hidden="true">âœ¦</span>
+    <span aria-hidden="true">&#10022;</span>
   </button>
   <div class="hotspot-hint" id="hotspotHint">Click here to make a wish</div>
 
@@ -1049,7 +1041,7 @@
     <section class="transmission" aria-labelledby="globalTitle">
       <div class="stage">
         <div class="brand">
-          <h1 id="globalTitle">Happy Birthday Global PersonðŸŽ‚</h1>
+          <h1 id="globalTitle">Happy Birthday Global Person &#127874;</h1>
         </div>
 
         <div class="globe-system" aria-label="Rotating hologram birthday globe">
@@ -1065,7 +1057,7 @@
 
   <div class="modal" id="wishModal" role="dialog" aria-modal="true" aria-labelledby="wishHeading">
     <div class="wish-panel" id="wishPanel">
-      <button class="close-modal" id="closeModal" type="button" aria-label="Close wish experience">Ã—</button>
+      <button class="close-modal" id="closeModal" type="button" aria-label="Close wish experience">&times;</button>
       <h2 class="wish-title" id="wishHeading">Make your birthday wish...</h2>
       <p class="wish-copy">Lock it in, then blow out the candles and send the signal worldwide.</p>
 
@@ -1073,13 +1065,13 @@
         <div class="plate"></div>
         <div class="layer bottom"></div>
         <div class="layer top"></div>
-        <div class="candle"><span class="flame"></span><span class="smoke">ðŸ’¨</span></div>
-        <div class="candle"><span class="flame"></span><span class="smoke">ðŸ’¨</span></div>
-        <div class="candle"><span class="flame"></span><span class="smoke">ðŸ’¨</span></div>
+        <div class="candle"><span class="flame"></span><span class="smoke">&#128168;</span></div>
+        <div class="candle"><span class="flame"></span><span class="smoke">&#128168;</span></div>
+        <div class="candle"><span class="flame"></span><span class="smoke">&#128168;</span></div>
       </div>
 
       <button class="blow-button" id="blowButton" type="button">Blow Out Candles</button>
-      <p class="transmitted">Wish Transmitted Globally ðŸŒâœ¨</p>
+      <p class="transmitted">Wish Transmitted Globally &#127757;&#10024;</p>
     </div>
   </div>
 
@@ -1098,8 +1090,6 @@
     const songOne = document.getElementById("songOne");
     const songTwo = document.getElementById("songTwo");
     const songThree = document.getElementById("songThree");
-    const topLeftZone = document.getElementById("topLeftZone");
-    const bottomLeftZone = document.getElementById("bottomLeftZone");
     const wishHotspot = document.getElementById("wishHotspot");
     const wishModal = document.getElementById("wishModal");
     const wishPanel = document.getElementById("wishPanel");
@@ -1152,6 +1142,8 @@
     let hasStartedExperience = false;
     let lastBackgroundFrame = 0;
     let emojiLoopRunning = false;
+    let preparedShareFile = null;
+    let preparedShareUrl = "";
 
     const rand = (min, max) => Math.random() * (max - min) + min;
 
@@ -1236,11 +1228,11 @@
       switchSong(songTwo, songThree, 280);
     }
 
-    const birthdayMessage = `Happy Birthday, Toluwanimi! âœ¨
+    const birthdayMessage = `Happy Birthday, Toluwanimi!¨
 
 I just want to wish you a happy birthday! In the short time we've talked, it's already super obvious how grounded, smart, and capable you are.
 
-As you step into this new age, I pray you never loose sight of how much potential you carry. May this year be kind to you, surprise you in the best ways possible, and bring you closer to every single goal you are chasing. Enjoy every second of your day!`;
+As you step into this new age, I pray you never lose sight of how much potential you carry. May this year be kind to you, surprise you in the best ways possible, and bring you closer to every single goal you are chasing. Enjoy every second of your day!`;
 
     function typeMessage(index = 0) {
       if (index <= birthdayMessage.length) {
@@ -1502,75 +1494,6 @@ As you step into this new age, I pray you never loose sight of how much potentia
       requestAnimationFrame(animateEmoji);
     }
 
-    function topLeftBurst() {
-      const icons = ["ðŸŽ‚", "ðŸŽ‰", "ðŸŽŠ", "âœ¨"];
-      for (let i = 0; i < 42; i += 1) {
-        spawnEmoji(icons[i % icons.length], 18, 18, rand(2.4, 10), rand(1.2, 8), rand(22, 44));
-      }
-      confettiEngine({
-        particleCount: 120,
-        spread: 78,
-        angle: 45,
-        origin: { x: 0, y: 0 },
-        colors: ["#00f2fe", "#4facfe", "#f6d365", "#ffffff"]
-      });
-    }
-
-    function bottomCornerStream() {
-      const icons = ["â¤ï¸", "â¤ï¸", "â¤ï¸", "â¤ï¸", "ðŸŽ‚"];
-      for (let i = 0; i < 38; i += 1) {
-        const fromLeft = i % 2 === 0;
-        spawnFastEmoji(
-          icons[i % icons.length],
-          fromLeft ? 16 : width - 16,
-          height - 18,
-          fromLeft ? rand(3.8, 9.8) : rand(-9.8, -3.8),
-          rand(-16, -9),
-          rand(22, 36)
-        );
-      }
-      confettiEngine({
-        particleCount: 70,
-        angle: 68,
-        spread: 62,
-        origin: { x: 0, y: 1 },
-        colors: ["#00f2fe", "#4facfe", "#f6d365", "#ffffff"]
-      });
-      confettiEngine({
-        particleCount: 70,
-        angle: 112,
-        spread: 62,
-        origin: { x: 1, y: 1 },
-        colors: ["#00f2fe", "#4facfe", "#f6d365", "#ffffff"]
-      });
-    }
-
-    function loveSpray(duration = 12000) {
-      const end = Date.now() + duration;
-      const icons = ["â¤ï¸", "â¤ï¸", "â¤ï¸", "â¤ï¸", "ðŸŽ‚"];
-      let lastSpawn = 0;
-
-      (function frame(now) {
-        if (now - lastSpawn > 55) {
-          lastSpawn = now;
-
-          for (let i = 0; i < 4; i += 1) {
-            const fromLeft = i % 2 === 0;
-            spawnFastEmoji(
-              icons[Math.floor(Math.random() * icons.length)],
-              fromLeft ? rand(12, 50) : rand(width - 50, width - 12),
-              height - rand(6, 34),
-              fromLeft ? rand(3.5, 8.5) : rand(-8.5, -3.5),
-              rand(-15.5, -8.5),
-              rand(20, 34)
-            );
-          }
-        }
-
-        if (Date.now() < end) requestAnimationFrame(frame);
-      }());
-    }
-
     function confettiRain(duration = 4200) {
       const end = Date.now() + duration;
       const colors = ["#f6d365", "#8be9dd", "#d8a7ff", "#ffffff"];
@@ -1613,12 +1536,17 @@ As you step into this new age, I pray you never loose sight of how much potentia
       void lightLeak.offsetWidth;
       lightLeak.classList.add("is-active");
       playFinalSong();
-      globalTitle.textContent = "It's your Birthday ðŸŽ‚";
+      globalTitle.textContent = "It's your Birthday \u{1F382}";
       confettiRain(3600);
-      loveSpray(12000);
       setTimeout(() => {
         closeWishModal();
+        shareButton.textContent = "Preparing Status Image...";
+        shareButton.disabled = true;
         shareButton.classList.add("is-visible");
+        prepareShareImage().finally(() => {
+          shareButton.textContent = "Share to Status";
+          shareButton.disabled = false;
+        });
       }, 2300);
 
       const end = Date.now() + 2600;
@@ -1633,28 +1561,11 @@ As you step into this new age, I pray you never loose sight of how much potentia
           origin: { x: Math.random(), y: rand(0.12, 0.62) },
           colors
         });
-        confettiEngine({
-          particleCount: 10,
-          angle: 60,
-          spread: 72,
-          origin: { x: 0, y: 0.72 },
-          colors
-        });
-        confettiEngine({
-          particleCount: 10,
-          angle: 120,
-          spread: 72,
-          origin: { x: 1, y: 0.72 },
-          colors
-        });
-
         if (Date.now() < end) requestAnimationFrame(fireworkFrame);
       }());
     }
 
-    async function shareImage() {
-      shareButton.textContent = "Preparing image...";
-      shareButton.disabled = true;
+    async function prepareShareImage() {
       const modalDisplay = wishModal.style.display;
       const buttonDisplay = shareButton.style.display;
       wishModal.style.display = "none";
@@ -1669,34 +1580,35 @@ As you step into this new age, I pray you never loose sight of how much potentia
         });
 
         const blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/png"));
-        const file = new File([blob], "happy-birthday-global-tolu.png", { type: "image/png" });
+        preparedShareFile = new File([blob], "happy-birthday-global-tolu.png", { type: "image/png" });
+        if (preparedShareUrl) URL.revokeObjectURL(preparedShareUrl);
+        preparedShareUrl = URL.createObjectURL(blob);
+        return preparedShareFile;
+      } finally {
+        wishModal.style.display = modalDisplay;
+        shareButton.style.display = buttonDisplay;
+      }
+    }
+
+    async function shareImage() {
+      shareButton.disabled = true;
+
+      try {
+        const file = preparedShareFile || await prepareShareImage();
 
         if (navigator.canShare && navigator.canShare({ files: [file] })) {
           await navigator.share({ files: [file] });
         } else {
           const link = document.createElement("a");
-          link.href = URL.createObjectURL(blob);
+          link.href = preparedShareUrl;
           link.download = "happy-birthday-global-tolu.png";
           link.click();
-          URL.revokeObjectURL(link.href);
         }
       } finally {
-        wishModal.style.display = modalDisplay;
-        shareButton.style.display = buttonDisplay;
         shareButton.textContent = "Share to Status";
         shareButton.disabled = false;
       }
     }
-
-    topLeftZone.addEventListener("pointerdown", (event) => {
-      event.stopPropagation();
-      topLeftBurst();
-    });
-
-    bottomLeftZone.addEventListener("pointerdown", (event) => {
-      event.stopPropagation();
-      bottomCornerStream();
-    });
 
     wishHotspot.addEventListener("click", openWishModal);
     closeModal.addEventListener("click", closeWishModal);
@@ -1717,4 +1629,3 @@ As you step into this new age, I pray you never loose sight of how much potentia
   </script>
 </body>
 </html>
-
