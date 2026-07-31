@@ -1397,6 +1397,22 @@ As you step into this new age, I hope you never lose sight of how much potential
       });
     }
 
+    function spawnFastEmoji(text, x, y, vx, vy, size) {
+      emojiParticles.push({
+        text,
+        x,
+        y,
+        vx,
+        vy,
+        size,
+        gravity: rand(0.12, 0.24),
+        rotation: rand(-0.28, 0.28),
+        spin: rand(-0.12, 0.12),
+        life: 1,
+        decay: rand(0.024, 0.04)
+      });
+    }
+
     function animateEmoji() {
       burstCtx.clearRect(0, 0, width, height);
       burstCtx.textAlign = "center";
@@ -1439,16 +1455,16 @@ As you step into this new age, I hope you never lose sight of how much potential
     }
 
     function bottomCornerStream() {
-      const icons = ["💕", "✨", "🎉", "💙", "🌐"];
-      for (let i = 0; i < 64; i += 1) {
+      const icons = ["❤️", "❤️", "❤️", "💖", "🎂"];
+      for (let i = 0; i < 86; i += 1) {
         const fromLeft = i % 2 === 0;
-        spawnEmoji(
+        spawnFastEmoji(
           icons[i % icons.length],
           fromLeft ? 16 : width - 16,
           height - 18,
-          fromLeft ? rand(0.6, 5.2) : rand(-5.2, -0.6),
-          rand(-11, -5.6),
-          rand(20, 38)
+          fromLeft ? rand(2.6, 8.2) : rand(-8.2, -2.6),
+          rand(-14, -7.5),
+          rand(24, 42)
         );
       }
       confetti({
@@ -1469,18 +1485,18 @@ As you step into this new age, I hope you never lose sight of how much potential
 
     function loveSpray(duration = 4200) {
       const end = Date.now() + duration;
-      const icons = ["💕", "💖", "💗", "✨", "🎂"];
+      const icons = ["❤️", "❤️", "❤️", "💖", "🎂"];
 
       (function frame() {
-        for (let i = 0; i < 5; i += 1) {
+        for (let i = 0; i < 9; i += 1) {
           const fromLeft = i % 2 === 0;
-          spawnEmoji(
+          spawnFastEmoji(
             icons[Math.floor(Math.random() * icons.length)],
             fromLeft ? rand(12, 54) : rand(width - 54, width - 12),
             height - rand(8, 44),
-            fromLeft ? rand(0.2, 2.6) : rand(-2.6, -0.2),
-            rand(-8.8, -4.2),
-            rand(20, 34)
+            fromLeft ? rand(2.2, 7.2) : rand(-7.2, -2.2),
+            rand(-13.5, -7.2),
+            rand(22, 40)
           );
         }
 
@@ -1531,8 +1547,8 @@ As you step into this new age, I hope you never lose sight of how much potential
       lightLeak.classList.add("is-active");
       playFinalSong();
       globalTitle.textContent = "It's your Birthday 🎂";
-      confettiRain(4800);
-      loveSpray(4800);
+      confettiRain(3600);
+      loveSpray(3000);
       setTimeout(() => {
         closeWishModal();
         shareButton.classList.add("is-visible");
