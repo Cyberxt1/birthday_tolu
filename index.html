@@ -1155,8 +1155,12 @@
 
     const rand = (min, max) => Math.random() * (max - min) + min;
 
-    function playBackgroundOnce() {
-      if (hasAttemptedAudio) return;
+    [songOne, songTwo, songThree].forEach((song) => {
+      song.load();
+    });
+
+    async function playBackgroundOnce() {
+      if (hasAttemptedAudio && !songOne.paused) return true;
       hasAttemptedAudio = true;
       [songTwo, songThree].forEach((song) => {
         song.pause();
@@ -1164,20 +1168,35 @@
         song.volume = 0;
       });
       songOne.volume = songVolumes.get(songOne);
-      songOne.play().catch(() => {
+      try {
+        await songOne.play();
+        return true;
+      } catch (error) {
         hasAttemptedAudio = false;
-      });
+        return false;
+      }
     }
 
-    function startExperience() {
+    async function startExperience() {
       if (hasStartedExperience) return;
+      const didStartAudio = await playBackgroundOnce();
+      if (!didStartAudio) return;
+
       hasStartedExperience = true;
-      playBackgroundOnce();
       entryGate.classList.add("is-hidden");
       setTimeout(() => typeMessage(), 420);
     }
 
+    function retrySongOneOnGesture() {
+      if (!hasStartedExperience || !songOne.paused || !songTwo.paused || !songThree.paused) return;
+      playBackgroundOnce();
+    }
+
     entryGate.addEventListener("pointerdown", startExperience);
+    entryGate.addEventListener("touchend", startExperience);
+    entryGate.addEventListener("click", startExperience);
+    window.addEventListener("pointerdown", retrySongOneOnGesture, { passive: true });
+    window.addEventListener("touchend", retrySongOneOnGesture, { passive: true });
 
     function switchSong(from, to, fadeDuration = 350) {
       const started = performance.now();
